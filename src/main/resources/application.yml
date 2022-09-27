@@ -1,0 +1,18 @@
+server:
+    port: 8081
+    error:
+        include-message: always
+spring:
+    datasource:
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/microblogdb2
+        username: root
+        password: 12345
+    jpa:
+        hibernate.ddl-auto: update
+        show-sql: true
+jwt:
+    key: jwtsecretkeyjwtscretkeyjwtscretkey
+    issuer: microbloggingapp
+    header: Authorization
+    prefix: Bearer
