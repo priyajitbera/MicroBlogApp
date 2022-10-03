@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.priyajit.microblogapp.dto.PostModel;
 import com.priyajit.microblogapp.entity.Post;
@@ -30,67 +30,62 @@ public class PostController {
     PostService postService;
 
     @PostMapping("/save")
-    public Post savePost(@RequestBody PostModel postModel) {
+    public ResponseEntity<Object> savePost(@RequestBody PostModel postModel) {
         try {
-            return postService.save(postModel);
+            Post post = postService.save(postModel);
+            return ResponseBuilder.buildResponse(post, HttpStatus.CREATED, "Post saved successfully!");
         } catch (UserNotFoundException e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (DBException e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            return ResponseBuilder.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
     @GetMapping("/byId/{postId}")
-    public Post getPostById(@PathVariable(name = "postId") Long postId) {
+    public ResponseEntity<Object> getPostById(@PathVariable(name = "postId") Long postId) {
         try {
-            return postService.findByPostId(postId);
+            Post post = postService.findByPostId(postId);
+            return ResponseBuilder.buildResponse(post, HttpStatus.OK, null);
         } catch (PostNotFoundException e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 
     @GetMapping("/byUserId/{userId}")
-    public List<Post> getPostsByUserId(@PathVariable(name = "userId") Long userId) {
+    public ResponseEntity<Object> getPostsByUserId(@PathVariable(name = "userId") Long userId) {
         try {
-            return postService.findByUserId(userId);
+            List<Post> posts = postService.findByUserId(userId);
+            return ResponseBuilder.buildResponse(posts, HttpStatus.OK, null);
         } catch (UserNotFoundException e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 
     @PatchMapping("/update")
-    public Post updatePost(@RequestBody PostModel postModel) {
+    public ResponseEntity<Object> updatePost(@RequestBody PostModel postModel) {
         try {
-            return postService.updatePost(postModel);
+            Post post = postService.updatePost(postModel);
+            return ResponseBuilder.buildResponse(post, HttpStatus.OK, "Post updated successfully!");
         } catch (UserNotFoundException | PostNotFoundException e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (EntityOwnerMismatchException e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+            return ResponseBuilder.buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
         } catch (DBException e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            return ResponseBuilder.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
     @DeleteMapping("/delete/{postId}")
-    public void deletePostById(@PathVariable(name = "postId") Long postId) {
+    public ResponseEntity<Object> deletePostById(@PathVariable(name = "postId") Long postId) {
         try {
             postService.deletePostById(postId);
+            return ResponseBuilder.buildResponse(null, HttpStatus.OK, "Post deleted successfully!");
         } catch (PostNotFoundException e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (EntityOwnerMismatchException e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+            return ResponseBuilder.buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
         } catch (DBException e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            return ResponseBuilder.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 }

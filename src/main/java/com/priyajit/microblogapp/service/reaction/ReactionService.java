@@ -22,7 +22,8 @@ public interface ReactionService {
 
     public List<Reaction> findByReplyId(Long replyId) throws ReplyNotFoundException;
 
-    public Reaction updateReaction(ReactionModel reactionModel) throws ReactionNotFoundException, DBException;
+    public Reaction updateReaction(ReactionModel reactionModel)
+            throws ReactionNotFoundException, DBException, EntityOwnerMismatchException;
 
     public void deleteById(Long reactionId) throws ReactionNotFoundException, EntityOwnerMismatchException, DBException;
 }

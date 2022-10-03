@@ -1,5 +1,7 @@
 package com.priyajit.microblogapp.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -7,8 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class HomeController {
 
     @GetMapping("/protected")
-    public String homeProtected() {
-        return "Home ... protected";
+    public ResponseEntity<Object> homeProtected() {
+        return ResponseBuilder
+                .buildResponse(null, HttpStatus.OK,
+                        "This is protected URL for testing, able to access this suggest successfull authentication");
     }
 
     @GetMapping("/")

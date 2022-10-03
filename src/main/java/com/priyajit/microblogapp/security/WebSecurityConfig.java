@@ -19,11 +19,12 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.priyajit.microblogapp.filter.JwtTokenGeneratorFilter;
 import com.priyajit.microblogapp.filter.JwtTokenValidatorFilter;
+import com.priyajit.microblogapp.filter.RequestTrackerInitiatorFilter;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-    final static String[] UNAUTHENTICATED_ENPOINTS = { "/open" };
+    final static String[] UNAUTHENTICATED_ENPOINTS = { "/open", "/rest/user/register" };
 
     @Autowired
     private AuthenticationProvider authenticationProvider;
@@ -33,6 +34,9 @@ public class WebSecurityConfig {
 
     @Autowired
     private JwtTokenValidatorFilter jwtTokenValidatorFilter;
+
+    @Autowired
+    private RequestTrackerInitiatorFilter requestIdGeneratorFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -61,6 +65,7 @@ public class WebSecurityConfig {
                         BasicAuthenticationFilter.class)
                 .addFilterAfter(jwtTokenGeneratorFilter,
                         BasicAuthenticationFilter.class)
+                .addFilterBefore(requestIdGeneratorFilter, BasicAuthenticationFilter.class)
 
                 // ~ authentication type
                 .httpBasic().and()

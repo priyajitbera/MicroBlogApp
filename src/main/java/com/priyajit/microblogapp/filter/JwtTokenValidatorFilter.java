@@ -41,11 +41,9 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // if value has prefix "Bearer " then it's jwt token, value : "Bearer <jwt>"
-        String value = request.getHeader(JWT_HEADER);
-        boolean isJwtToken = value != null && value.startsWith(JWT_PREFIX); // JWT_PREFIX : "Authorization"
-
-        System.out.println("value of Authorization header: " + value);
+        // if value has prefix "Bearer " then it's jwt token, format "Bearer <jwt>"
+        String value = request.getHeader(JWT_HEADER); // JWT_HEADER : "Authorization"
+        boolean isJwtToken = value != null && value.startsWith(JWT_PREFIX); // JWT_PREFIX : "Bearer "
 
         if (isJwtToken) {
             // get the jwt token excluding the JWT_PREFIX "Bearer" and white space " "
