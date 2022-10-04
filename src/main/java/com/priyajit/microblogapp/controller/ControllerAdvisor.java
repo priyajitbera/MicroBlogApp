@@ -37,5 +37,4 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleEntityOwnerMismatchException(Exception e) {
         return ResponseBuilder.buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
     }
-
 }
