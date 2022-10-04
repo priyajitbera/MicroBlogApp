@@ -3,6 +3,7 @@ package com.priyajit.microblogapp.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,17 +39,17 @@ public class Reaction implements EntityOwnerDetails {
     private String type = Reaction.LIKE; // DEFAULT
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "userId", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "userId", nullable = false, foreignKey = @ForeignKey(name = "fk_reaction_user"))
     private User user;
 
     @JsonIgnore // when ever mapping Reaction obj to JSON ignore Parent entity Post
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", referencedColumnName = "postId")
+    @JoinColumn(name = "post_id", referencedColumnName = "postId", foreignKey = @ForeignKey(name = "fk_reaction_post"))
     private Post post;
 
     @JsonIgnore // when ever mapping Reaction obj to JSON ignore child entity Credential
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reply_id", referencedColumnName = "replyId")
+    @JoinColumn(name = "reply_id", referencedColumnName = "replyId", foreignKey = @ForeignKey(name = "fk_reaction_reply"))
     private Reply reply;
 
     public Long getReactionId() {

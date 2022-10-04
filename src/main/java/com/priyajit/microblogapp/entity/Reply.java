@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,15 +37,12 @@ public class Reply implements EntityOwnerDetails {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "post_id", referencedColumnName = "postId", nullable = false)
+    @JoinColumn(name = "post_id", referencedColumnName = "postId", nullable = false, foreignKey = @ForeignKey(name = "fk_reply_post"))
     private Post post;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "userId", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "userId", nullable = false, foreignKey = @ForeignKey(name = "fk_reply_user"))
     private User user;
-
-    // @OneToMany(fetch = FetchType.EAGER, mappedBy = "reply")
-    // private List<Reaction> reactions;
 
     public Long getReplyId() {
         return replyId;

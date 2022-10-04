@@ -2,6 +2,7 @@ package com.priyajit.microblogapp.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,11 +30,11 @@ public class Follow implements EntityOwnerDetails {
     private Long followId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "follower_id", referencedColumnName = "userId", nullable = false)
+    @JoinColumn(name = "follower_id", referencedColumnName = "userId", nullable = false, foreignKey = @ForeignKey(name = "fk_follow_follower"))
     private User follower; // who is following
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "followee_id", referencedColumnName = "userId", nullable = false)
+    @JoinColumn(name = "followee_id", referencedColumnName = "userId", nullable = false, foreignKey = @ForeignKey(name = "fk_follow_followee"))
     private User followee; // who is being followed
 
     public Long getFollowId() {

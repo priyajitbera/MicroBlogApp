@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,7 +36,7 @@ public class Post implements EntityOwnerDetails {
     private Boolean edited = false;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "userId", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "userId", nullable = false, foreignKey = @ForeignKey(name = "fk_post_user"))
     private User user;
 
     public Long getPostId() {
@@ -77,14 +78,6 @@ public class Post implements EntityOwnerDetails {
     public void setUser(User user) {
         this.user = user;
     }
-
-    // public List<Reaction> getReactions() {
-    // return reactions;
-    // }
-
-    // public void setReactions(List<Reaction> reactions) {
-    // this.reactions = reactions;
-    // }
 
     @Override
     public String toString() {

@@ -2,6 +2,8 @@ package com.priyajit.microblogapp.service.user;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.priyajit.microblogapp.dto.UserModel;
 import com.priyajit.microblogapp.entity.Credential;
+import com.priyajit.microblogapp.entity.RequestTracker;
 import com.priyajit.microblogapp.entity.User;
 import com.priyajit.microblogapp.exception.DBException;
 import com.priyajit.microblogapp.exception.EntityOwnerMismatchException;
@@ -21,6 +24,8 @@ import com.priyajit.microblogapp.repository.UserRepo;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
+
+    Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     UserRepo userRepo;
@@ -49,6 +54,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         try {
             return userRepo.save(user);
         } catch (Exception ex) {
+
+            logger.error("requestId: " + RequestTracker.getCurrentRequestId()); // logging
+            logger.error("Error while saving in DB", ex);
+
             throw new DBException(ex.getMessage());
         }
 
@@ -58,6 +67,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public User findByEmail(String email) throws UserNotFoundException {
         Optional<User> userOpt = userRepo.findByEmail(email);
         if (!userOpt.isPresent()) {
+            logger.error("requestId: " + RequestTracker.getCurrentRequestId()); // logging
+            logger.error("Error while saving in DB");
             throw new UserNotFoundException(email);
         }
         return userOpt.get();

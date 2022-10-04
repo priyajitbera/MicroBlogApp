@@ -6,6 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -55,7 +56,7 @@ public class User implements UserDetails, EntityOwnerDetails {
 
     @JsonIgnore // while mapping User object to JSON ignore child entity Credential
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "credential_id", referencedColumnName = "credentialId")
+    @JoinColumn(name = "credential_id", referencedColumnName = "credentialId", foreignKey = @ForeignKey(name = "fk_user_credential"))
     private Credential credential;
 
     // ~ Getter Setters and toString method
