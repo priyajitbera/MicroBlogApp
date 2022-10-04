@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ToJson {
-    public String toJson(Object object) {
+    public static String toJson(Object object) {
         String json = null;
         try {
             json = (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(object);
