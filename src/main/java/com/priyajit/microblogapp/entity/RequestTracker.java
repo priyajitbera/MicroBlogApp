@@ -2,6 +2,7 @@ package com.priyajit.microblogapp.entity;
 
 import java.util.UUID;
 
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 public class RequestTracker {
@@ -12,8 +13,12 @@ public class RequestTracker {
     }
 
     public static String getCurrentRequestId() {
-        return (String) RequestContextHolder
-                .getRequestAttributes().getAttribute("requestId",
-                        0);
+
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+
+        if (attributes != null) {
+            return (String) attributes.getAttribute("requestId", 0);
+        } else
+            return null;
     }
 }

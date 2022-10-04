@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.priyajit.microblogapp.dto.ReactionModel;
 import com.priyajit.microblogapp.entity.Reaction;
-import com.priyajit.microblogapp.exception.DBException;
 import com.priyajit.microblogapp.exception.EntityOwnerMismatchException;
 import com.priyajit.microblogapp.exception.PostNotFoundException;
 import com.priyajit.microblogapp.exception.ReactionNotFoundException;
@@ -32,62 +31,44 @@ public class ReactionController {
     private ReactionService reactionService;
 
     @PostMapping("/save")
-    public ResponseEntity<Object> saveReaction(@RequestBody ReactionModel reactionModel) {
-        try {
-            Reaction reaction = reactionService.save(reactionModel);
-            return ResponseBuilder.buildResponse(reaction, HttpStatus.CREATED, "Reaction saved successfully!");
-        } catch (UserNotFoundException | PostNotFoundException | ReplyNotFoundException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (DBException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+    public ResponseEntity<Object> saveReaction(@RequestBody ReactionModel reactionModel)
+            throws UserNotFoundException, PostNotFoundException, ReplyNotFoundException {
+
+        Reaction reaction = reactionService.save(reactionModel);
+        return ResponseBuilder.buildResponse(reaction, HttpStatus.CREATED, "Reaction saved successfully!");
+
     }
 
     @GetMapping("/byId/{reactionId}")
-    public ResponseEntity<Object> getReactionById(@PathVariable(name = "reactionId") Long reactionId) {
-        try {
-            Reaction reaction = reactionService.findById(reactionId);
-            return ResponseBuilder.buildResponse(reaction, HttpStatus.OK, null);
-        } catch (ReactionNotFoundException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public ResponseEntity<Object> getReactionById(@PathVariable(name = "reactionId") Long reactionId)
+            throws ReactionNotFoundException {
+
+        Reaction reaction = reactionService.findById(reactionId);
+        return ResponseBuilder.buildResponse(reaction, HttpStatus.OK, null);
     }
 
     @GetMapping("/byPostId/{postId}")
-    public ResponseEntity<Object> getReactionByPostId(@PathVariable(name = "postId") Long postId) {
-        try {
-            List<Reaction> reactions = reactionService.findByPostId(postId);
-            return ResponseBuilder.buildResponse(reactions, HttpStatus.OK, null);
-        } catch (PostNotFoundException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public ResponseEntity<Object> getReactionByPostId(@PathVariable(name = "postId") Long postId)
+            throws PostNotFoundException {
+
+        List<Reaction> reactions = reactionService.findByPostId(postId);
+        return ResponseBuilder.buildResponse(reactions, HttpStatus.OK, null);
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<Object> updateReaction(@RequestBody ReactionModel reactionModel) {
-        try {
-            Reaction reaction = reactionService.updateReaction(reactionModel);
-            return ResponseBuilder.buildResponse(reaction, HttpStatus.OK, "Reaction updated successfully!");
-        } catch (ReactionNotFoundException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (EntityOwnerMismatchException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
-        } catch (DBException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+    public ResponseEntity<Object> updateReaction(@RequestBody ReactionModel reactionModel)
+            throws ReactionNotFoundException, EntityOwnerMismatchException {
+
+        Reaction reaction = reactionService.updateReaction(reactionModel);
+        return ResponseBuilder.buildResponse(reaction, HttpStatus.OK, "Reaction updated successfully!");
     }
 
     @DeleteMapping("/delete/{reactionId}")
-    public ResponseEntity<Object> deleteReactionById(@PathVariable Long reactionId) {
-        try {
-            reactionService.deleteById(reactionId);
-            return ResponseBuilder.buildResponse(null, HttpStatus.OK, "Reaction deleted successfully!");
-        } catch (ReactionNotFoundException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (EntityOwnerMismatchException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
-        } catch (DBException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+    public ResponseEntity<Object> deleteReactionById(@PathVariable Long reactionId)
+            throws ReactionNotFoundException, EntityOwnerMismatchException {
+
+        reactionService.deleteById(reactionId);
+        return ResponseBuilder.buildResponse(null, HttpStatus.OK, "Reaction deleted successfully!");
+
     }
 }

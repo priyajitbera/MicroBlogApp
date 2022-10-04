@@ -12,7 +12,6 @@ import com.priyajit.microblogapp.entity.Post;
 import com.priyajit.microblogapp.entity.Reaction;
 import com.priyajit.microblogapp.entity.Reply;
 import com.priyajit.microblogapp.entity.User;
-import com.priyajit.microblogapp.exception.DBException;
 import com.priyajit.microblogapp.exception.EntityOwnerMismatchException;
 import com.priyajit.microblogapp.exception.PostNotFoundException;
 import com.priyajit.microblogapp.exception.UserNotFoundException;
@@ -40,18 +39,14 @@ public class PostServiceImpl implements PostService {
     // --------------------------------------------------------------------------------------------------//
 
     @Override
-    public Post save(PostModel postModel) throws UserNotFoundException, DBException {
+    public Post save(PostModel postModel) throws UserNotFoundException {
         User user = userService.findByUserId(postModel.getUserId());
         Post post = new Post();
         post.setCaption(postModel.getCaption());
         post.setUser(user);
         post.setCreationDate(new Date());
 
-        try {
-            return postRepo.save(post);
-        } catch (Exception ex) {
-            throw new DBException(ex.getMessage());
-        }
+        return postRepo.save(post);
     }
 
     @Override
@@ -71,7 +66,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post updatePost(PostModel postModel)
-            throws PostNotFoundException, EntityOwnerMismatchException, DBException {
+            throws PostNotFoundException, EntityOwnerMismatchException {
         Post post = findByPostId(postModel.getPostId());
 
         // validate whether the entity owner is same as the current authenticated user
@@ -82,15 +77,12 @@ public class PostServiceImpl implements PostService {
         post.setCaption(postModel.getCaption());
         post.setEdited(true);
 
-        try {
-            return postRepo.save(post);
-        } catch (Exception ex) {
-            throw new DBException(ex.getMessage());
-        }
+        return postRepo.save(post);
+
     }
 
     @Override
-    public void deletePostById(Long postId) throws PostNotFoundException, EntityOwnerMismatchException, DBException {
+    public void deletePostById(Long postId) throws PostNotFoundException, EntityOwnerMismatchException {
         Post post = findByPostId(postId);
 
         // validate whether the entity owner is same as the current authenticated user
@@ -111,11 +103,7 @@ public class PostServiceImpl implements PostService {
         for (Reaction reaction : reactions)
             reactionRepo.deleteById(reaction.getReactionId());
 
-        try {
-            postRepo.deleteById(postId);
-        } catch (Exception ex) {
-            throw new DBException(ex.getMessage());
-        }
+        postRepo.deleteById(postId);
 
     }
 

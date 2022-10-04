@@ -11,7 +11,6 @@ import com.priyajit.microblogapp.entity.Post;
 import com.priyajit.microblogapp.entity.Reaction;
 import com.priyajit.microblogapp.entity.Reply;
 import com.priyajit.microblogapp.entity.User;
-import com.priyajit.microblogapp.exception.DBException;
 import com.priyajit.microblogapp.exception.EntityOwnerMismatchException;
 import com.priyajit.microblogapp.exception.PostNotFoundException;
 import com.priyajit.microblogapp.exception.ReactionNotFoundException;
@@ -66,7 +65,7 @@ public class ReactionServiceImpl implements ReactionService {
 
     @Override
     public Reaction save(ReactionModel reactionModel)
-            throws UserNotFoundException, PostNotFoundException, ReplyNotFoundException, DBException {
+            throws UserNotFoundException, PostNotFoundException, ReplyNotFoundException {
 
         // validate if reaction type is not one of the availables
         if (!reactionModel.getType().equals(Reaction.LIKE)
@@ -95,16 +94,12 @@ public class ReactionServiceImpl implements ReactionService {
             reaction.setReply(reply);
         }
 
-        try {
-            return reactionRepo.save(reaction);
-        } catch (Exception ex) {
-            throw new DBException(ex.getMessage());
-        }
+        return reactionRepo.save(reaction);
     }
 
     @Override
     public Reaction updateReaction(ReactionModel reactionModel)
-            throws ReactionNotFoundException, DBException, EntityOwnerMismatchException {
+            throws ReactionNotFoundException, EntityOwnerMismatchException {
         Reaction reaction = findById(reactionModel.getReactionId());
 
         // validate whether the entity owner is same as the current authenticated user
@@ -114,16 +109,12 @@ public class ReactionServiceImpl implements ReactionService {
 
         reaction.setType(reactionModel.getType());
 
-        try {
-            return reactionRepo.save(reaction);
-        } catch (Exception ex) {
-            throw new DBException(ex.getMessage());
-        }
+        return reactionRepo.save(reaction);
     }
 
     @Override
     public void deleteById(Long reactionId)
-            throws ReactionNotFoundException, EntityOwnerMismatchException, DBException {
+            throws ReactionNotFoundException, EntityOwnerMismatchException {
         Reaction reaction = findById(reactionId);
 
         // validate whether the entity owner is same as the current authenticated user
@@ -131,11 +122,7 @@ public class ReactionServiceImpl implements ReactionService {
             throw new EntityOwnerMismatchException();
         }
 
-        try {
-            reactionRepo.delete(reaction);
-        } catch (Exception ex) {
-            throw new DBException(ex.getMessage());
-        }
+        reactionRepo.delete(reaction);
 
     }
 

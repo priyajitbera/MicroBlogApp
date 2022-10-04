@@ -5,7 +5,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +20,6 @@ import com.priyajit.microblogapp.dto.UserModel;
 import com.priyajit.microblogapp.entity.Follow;
 import com.priyajit.microblogapp.entity.RequestTracker;
 import com.priyajit.microblogapp.entity.User;
-import com.priyajit.microblogapp.exception.DBException;
 import com.priyajit.microblogapp.exception.EntityOwnerMismatchException;
 import com.priyajit.microblogapp.exception.InvalidRequestException;
 import com.priyajit.microblogapp.exception.UserNotFoundException;
@@ -48,122 +46,79 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@RequestBody UserModel userModel) {
-        try {
-            User user = userService.register(userModel);
-            return ResponseBuilder.buildResponse(user, HttpStatus.CREATED, "User registered successfully!");
-        } catch (DataIntegrityViolationException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
-        } catch (DBException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+
+        User user = userService.register(userModel);
+        return ResponseBuilder.buildResponse(user, HttpStatus.CREATED, "User registered successfully!");
     }
 
     @GetMapping("/byId/{id}")
-    public ResponseEntity<Object> getUserById(@PathVariable(name = "id") Long userId) {
-        try {
-            User user = userService.findByUserId(userId);
-            return ResponseBuilder.buildResponse(user, HttpStatus.OK, null);
-        } catch (UserNotFoundException e) {
-            logger.info(null);
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public ResponseEntity<Object> getUserById(@PathVariable(name = "id") Long userId) throws UserNotFoundException {
+
+        User user = userService.findByUserId(userId);
+        return ResponseBuilder.buildResponse(user, HttpStatus.OK, null);
     }
 
     @GetMapping("/byEmail/{email}")
-    public ResponseEntity<Object> getUserByEmail(@PathVariable(name = "email") String email) {
-        try {
-            User user = userService.findByEmail(email);
-            return ResponseBuilder.buildResponse(user, HttpStatus.OK, null);
-        } catch (UserNotFoundException e) {
-            logger.info("requestId : " + RequestTracker.getCurrentRequestId());
-            logger.info(e.getMessage());
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public ResponseEntity<Object> getUserByEmail(@PathVariable(name = "email") String email)
+            throws UserNotFoundException {
+
+        User user = userService.findByEmail(email);
+        return ResponseBuilder.buildResponse(user, HttpStatus.OK, null);
     }
 
     @GetMapping("/byHandle/{handle}")
-    public ResponseEntity<Object> getUserByHandle(@PathVariable(name = "handle") String handle) {
-        try {
-            User user = userService.findByHandle(handle);
-            return ResponseBuilder.buildResponse(user, HttpStatus.OK, "");
-        } catch (UserNotFoundException e) {
-            logger.info("requestId : " + RequestTracker.getCurrentRequestId());
-            logger.info(e.getMessage());
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public ResponseEntity<Object> getUserByHandle(@PathVariable(name = "handle") String handle)
+            throws UserNotFoundException {
+
+        User user = userService.findByHandle(handle);
+        return ResponseBuilder.buildResponse(user, HttpStatus.OK, "");
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<Object> updateUser(@RequestBody UserModel userModel) {
-        try {
-            User user = userService.updateUser(userModel);
-            return ResponseBuilder.buildResponse(user, HttpStatus.OK, null);
-        } catch (UserNotFoundException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (EntityOwnerMismatchException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
-        } catch (DBException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+    public ResponseEntity<Object> updateUser(@RequestBody UserModel userModel)
+            throws UserNotFoundException, EntityOwnerMismatchException {
+
+        User user = userService.updateUser(userModel);
+        return ResponseBuilder.buildResponse(user, HttpStatus.OK, null);
     }
 
     @PatchMapping("/changePassword")
-    public ResponseEntity<Object> updatePassword(@RequestBody UserModel userModel) {
-        try {
-            userService.changePassword(userModel);
-            return ResponseBuilder.buildResponse(null, HttpStatus.OK, "Password changed Successfully");
-        } catch (UserNotFoundException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (EntityOwnerMismatchException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
-        } catch (DBException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+    public ResponseEntity<Object> updatePassword(@RequestBody UserModel userModel)
+            throws UserNotFoundException, EntityOwnerMismatchException {
+
+        userService.changePassword(userModel);
+        return ResponseBuilder.buildResponse(null, HttpStatus.OK, "Password changed Successfully");
     }
 
     @GetMapping("/followers/{userId}")
-    public ResponseEntity<Object> getFollowersById(@PathVariable(name = "userId") Long userId) {
-        try {
-            List<User> followers = followService.findFollowersByFolloweeId(userId);
-            return ResponseBuilder.buildResponse(followers, HttpStatus.OK, null);
-        } catch (UserNotFoundException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public ResponseEntity<Object> getFollowersById(@PathVariable(name = "userId") Long userId)
+            throws UserNotFoundException {
+
+        List<User> followers = followService.findFollowersByFolloweeId(userId);
+        return ResponseBuilder.buildResponse(followers, HttpStatus.OK, null);
     }
 
     @GetMapping("/followees/{userId}")
-    public ResponseEntity<Object> getFolloweesById(@PathVariable(name = "userId") Long userId) {
-        try {
-            List<User> followees = followService.findFolloweesByFollowerId(userId);
-            return ResponseBuilder.buildResponse(followees, HttpStatus.OK, null);
-        } catch (UserNotFoundException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public ResponseEntity<Object> getFolloweesById(@PathVariable(name = "userId") Long userId)
+            throws UserNotFoundException {
+
+        List<User> followees = followService.findFolloweesByFollowerId(userId);
+        return ResponseBuilder.buildResponse(followees, HttpStatus.OK, null);
     }
 
     @PostMapping("/follow")
-    public ResponseEntity<Object> follow(@RequestBody FollowModel followModel) {
-        try {
-            Follow follow = followService.follow(followModel);
-            return ResponseBuilder.buildResponse(follow, HttpStatus.OK, null);
-        } catch (UserNotFoundException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (InvalidRequestException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+    public ResponseEntity<Object> follow(@RequestBody FollowModel followModel)
+            throws UserNotFoundException, InvalidRequestException {
+
+        Follow follow = followService.follow(followModel);
+        return ResponseBuilder.buildResponse(follow, HttpStatus.OK, null);
     }
 
     @PostMapping("/unfollow")
-    public ResponseEntity<Object> unfollow(@RequestBody FollowModel followModel) {
-        try {
-            followService.unfollow(followModel);
-            return ResponseBuilder.buildResponse(null, HttpStatus.OK, "Unfollowed successfully!");
-        } catch (UserNotFoundException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (EntityOwnerMismatchException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
-        } catch (InvalidRequestException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+    public ResponseEntity<Object> unfollow(@RequestBody FollowModel followModel)
+            throws UserNotFoundException, EntityOwnerMismatchException, InvalidRequestException {
+
+        followService.unfollow(followModel);
+        return ResponseBuilder.buildResponse(null, HttpStatus.OK, "Unfollowed successfully!");
     }
 }

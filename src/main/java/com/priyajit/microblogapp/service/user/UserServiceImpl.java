@@ -16,7 +16,6 @@ import com.priyajit.microblogapp.dto.UserModel;
 import com.priyajit.microblogapp.entity.Credential;
 import com.priyajit.microblogapp.entity.RequestTracker;
 import com.priyajit.microblogapp.entity.User;
-import com.priyajit.microblogapp.exception.DBException;
 import com.priyajit.microblogapp.exception.EntityOwnerMismatchException;
 import com.priyajit.microblogapp.exception.UserNotFoundException;
 import com.priyajit.microblogapp.repository.CredentialRepo;
@@ -37,7 +36,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     PasswordEncoder passwordEncoder;
 
     @Override
-    public User register(UserModel userModel) throws DBException {
+    public User register(UserModel userModel) {
 
         User user = new User();
         user.setEmail(userModel.getEmail());
@@ -51,15 +50,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                                                                                  // passwordEncoder
         user.setCredential(credential);
 
-        try {
-            return userRepo.save(user);
-        } catch (Exception ex) {
-
-            logger.error("requestId: " + RequestTracker.getCurrentRequestId()); // logging
-            logger.error("Error while saving in DB", ex);
-
-            throw new DBException(ex.getMessage());
-        }
+        return userRepo.save(user);
 
     }
 
@@ -103,7 +94,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public User updateUser(UserModel userModel)
-            throws UserNotFoundException, EntityOwnerMismatchException, DBException {
+            throws UserNotFoundException, EntityOwnerMismatchException {
 
         Optional<User> userOpt = userRepo.findById(userModel.getUserId());
 
@@ -134,15 +125,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         if (userModel.getType() != null)
             user.setType(userModel.getType());
-        try {
-            return userRepo.save(user);
-        } catch (Exception ex) {
-            throw new DBException(ex.getMessage());
-        }
+
+        return userRepo.save(user);
     }
 
     public void changePassword(UserModel userModel)
-            throws UserNotFoundException, EntityOwnerMismatchException, DBException {
+            throws UserNotFoundException, EntityOwnerMismatchException {
 
         // validate if user present with given userId
         Optional<User> userOpt = userRepo.findById(userModel.getUserId());
@@ -169,11 +157,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         // set the new password
         credential.setPassword(passwordEncoder.encode(userModel.getNewPassword())); // must encode with
                                                                                     // passwordEncoder
-        try {
-            userRepo.save(user);
-        } catch (Exception ex) {
-            throw new DBException(ex.getMessage());
-        }
+        userRepo.save(user);
     }
 
     // ~ Implementation of the methods of the UserDetails interface

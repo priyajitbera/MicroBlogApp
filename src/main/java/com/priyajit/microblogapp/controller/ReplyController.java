@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.priyajit.microblogapp.dto.ReplyModel;
 import com.priyajit.microblogapp.entity.Reply;
-import com.priyajit.microblogapp.exception.DBException;
 import com.priyajit.microblogapp.exception.EntityOwnerMismatchException;
 import com.priyajit.microblogapp.exception.PostNotFoundException;
 import com.priyajit.microblogapp.exception.ReplyNotFoundException;
@@ -31,60 +30,43 @@ public class ReplyController {
     ReplyService replyService;
 
     @PostMapping("/save")
-    public ResponseEntity<Object> saveReply(@RequestBody ReplyModel replyModel) {
-        try {
-            Reply reply = replyService.save(replyModel);
-            return ResponseBuilder.buildResponse(reply, HttpStatus.CREATED, "Reply saved successfully!");
-        } catch (UserNotFoundException | PostNotFoundException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (DBException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+    public ResponseEntity<Object> saveReply(@RequestBody ReplyModel replyModel)
+            throws UserNotFoundException, PostNotFoundException {
+
+        Reply reply = replyService.save(replyModel);
+        return ResponseBuilder.buildResponse(reply, HttpStatus.CREATED, "Reply saved successfully!");
     }
 
     @GetMapping("/byId/{replyId}")
-    public ResponseEntity<Object> getReplyById(@PathVariable(name = "replyId") Long replyId) {
-        try {
-            Reply reply = replyService.findById(replyId);
-            return ResponseBuilder.buildResponse(reply, HttpStatus.OK, null);
-        } catch (ReplyNotFoundException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public ResponseEntity<Object> getReplyById(@PathVariable(name = "replyId") Long replyId)
+            throws ReplyNotFoundException {
+
+        Reply reply = replyService.findById(replyId);
+        return ResponseBuilder.buildResponse(reply, HttpStatus.OK, null);
+
     }
 
     @GetMapping("/byPostId/{postId}")
-    public ResponseEntity<Object> getRepliesByPostId(@PathVariable(name = "postId") Long postId) {
-        try {
-            List<Reply> replies = replyService.findByPostId(postId);
-            return ResponseBuilder.buildResponse(replies, HttpStatus.OK, null);
-        } catch (PostNotFoundException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public ResponseEntity<Object> getRepliesByPostId(@PathVariable(name = "postId") Long postId)
+            throws PostNotFoundException {
+
+        List<Reply> replies = replyService.findByPostId(postId);
+        return ResponseBuilder.buildResponse(replies, HttpStatus.OK, null);
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<Object> updateReply(@RequestBody ReplyModel replyModel) {
-        try {
-            Reply reply = replyService.updateReply(replyModel);
-            return ResponseBuilder.buildResponse(reply, HttpStatus.OK, "Reply updated successfully!");
-        } catch (ReplyNotFoundException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (EntityOwnerMismatchException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
-        } catch (DBException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+    public ResponseEntity<Object> updateReply(@RequestBody ReplyModel replyModel)
+            throws ReplyNotFoundException, EntityOwnerMismatchException {
+
+        Reply reply = replyService.updateReply(replyModel);
+        return ResponseBuilder.buildResponse(reply, HttpStatus.OK, "Reply updated successfully!");
     }
 
     @DeleteMapping("/delete/{replyId}")
-    public ResponseEntity<Object> deleteReplyById(@PathVariable(name = "replyId") Long replyId) {
-        try {
-            replyService.deleteById(replyId);
-            return ResponseBuilder.buildResponse(null, HttpStatus.OK, "Reply deleted successfully!");
-        } catch (ReplyNotFoundException | EntityOwnerMismatchException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (DBException e) {
-            return ResponseBuilder.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+    public ResponseEntity<Object> deleteReplyById(@PathVariable(name = "replyId") Long replyId)
+            throws ReplyNotFoundException, EntityOwnerMismatchException {
+
+        replyService.deleteById(replyId);
+        return ResponseBuilder.buildResponse(null, HttpStatus.OK, "Reply deleted successfully!");
     }
 }

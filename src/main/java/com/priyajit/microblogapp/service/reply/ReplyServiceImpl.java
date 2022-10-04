@@ -10,7 +10,6 @@ import com.priyajit.microblogapp.dto.ReplyModel;
 import com.priyajit.microblogapp.entity.Post;
 import com.priyajit.microblogapp.entity.Reply;
 import com.priyajit.microblogapp.entity.User;
-import com.priyajit.microblogapp.exception.DBException;
 import com.priyajit.microblogapp.exception.EntityOwnerMismatchException;
 import com.priyajit.microblogapp.exception.PostNotFoundException;
 import com.priyajit.microblogapp.exception.ReplyNotFoundException;
@@ -44,7 +43,7 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     @Override
-    public Reply save(ReplyModel replyModel) throws UserNotFoundException, PostNotFoundException, DBException {
+    public Reply save(ReplyModel replyModel) throws UserNotFoundException, PostNotFoundException {
         User user = userService.findByUserId(replyModel.getUserId());
         Post post = postService.findByPostId(replyModel.getPostId());
         Reply reply = new Reply();
@@ -53,11 +52,7 @@ public class ReplyServiceImpl implements ReplyService {
         reply.setReply(replyModel.getReply());
         reply.setCreationDate(replyModel.getCreationDate());
 
-        try {
-            return replyRepo.save(reply);
-        } catch (Exception ex) {
-            throw new DBException(ex.getMessage());
-        }
+        return replyRepo.save(reply);
 
     }
 
@@ -69,7 +64,7 @@ public class ReplyServiceImpl implements ReplyService {
 
     @Override
     public Reply updateReply(ReplyModel replyModel)
-            throws ReplyNotFoundException, EntityOwnerMismatchException, DBException {
+            throws ReplyNotFoundException, EntityOwnerMismatchException {
         Reply reply = findById(replyModel.getReplyId());
 
         // validate whether the entity owner is same as the current authenticated user
@@ -79,15 +74,12 @@ public class ReplyServiceImpl implements ReplyService {
 
         reply.setReply(replyModel.getReply());
         reply.setEdited(true);
-        try {
-            return replyRepo.save(reply);
-        } catch (Exception ex) {
-            throw new DBException(ex.getMessage());
-        }
+
+        return replyRepo.save(reply);
     }
 
     @Override
-    public void deleteById(Long replyId) throws ReplyNotFoundException, EntityOwnerMismatchException, DBException {
+    public void deleteById(Long replyId) throws ReplyNotFoundException, EntityOwnerMismatchException {
         Reply reply = findById(replyId);
 
         // validate whether the entity owner is same as the current authenticated user
@@ -95,11 +87,8 @@ public class ReplyServiceImpl implements ReplyService {
             throw new EntityOwnerMismatchException();
         }
 
-        try {
-            replyRepo.delete(reply);
-        } catch (Exception ex) {
-            throw new DBException(ex.getMessage());
-        }
+        replyRepo.delete(reply);
+
     }
 
 }
