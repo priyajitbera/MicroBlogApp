@@ -8,7 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class MicroBlogAppApplication {
-
+	
 	public static void main(String[] args) {
 		SpringApplication.run(MicroBlogAppApplication.class, args);
 	}

@@ -69,6 +69,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public User findByHandle(String handle) throws UserNotFoundException {
         Optional<User> userOpt = userRepo.findByHandle(handle);
         if (!userOpt.isPresent()) {
+            // logger.info("Loggin from UserServiceImpl");
             throw new UserNotFoundException(handle);
         }
         return userOpt.get();

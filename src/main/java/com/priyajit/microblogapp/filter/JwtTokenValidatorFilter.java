@@ -49,7 +49,7 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
             // get the jwt token excluding the JWT_PREFIX "Bearer" and white space " "
             String jwt = null;
             if (value != null)
-                value.substring(JWT_PREFIX.length() + 1);
+                jwt = value.substring(JWT_PREFIX.length() + 1);
             try {
                 SecretKey key = Keys.hmacShaKeyFor(JWT_KEY.getBytes(StandardCharsets.UTF_8));
                 Claims claims = Jwts.parserBuilder()
