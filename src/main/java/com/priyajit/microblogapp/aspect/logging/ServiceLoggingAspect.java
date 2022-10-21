@@ -1,4 +1,4 @@
-package com.priyajit.microblogapp.aspect.logging.service;
+package com.priyajit.microblogapp.aspect.logging;
 
 import java.util.Arrays;
 
