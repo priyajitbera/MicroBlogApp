@@ -53,8 +53,8 @@ public class ServiceLoggingAspect {
 
         StringBuffer msg = new StringBuffer("\n");
         msg.append("requestId: " + RequestTracker.getCurrentRequestId() + "\n");
-        msg.append("AfterReturning method: " + joinPoint.getSignature() + "\n");
-        msg.append("Returned value: \n" + ToJson.toJson(result) + "\n");
+        msg.append("afterReturning method: " + joinPoint.getSignature() + "\n");
+        msg.append("returned value: \n" + ToJson.toJson(result) + "\n");
         logger.info(msg.toString());
     }
 

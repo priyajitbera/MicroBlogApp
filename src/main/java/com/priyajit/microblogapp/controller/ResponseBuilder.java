@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.priyajit.microblogapp.entity.RequestTracker;
 
 public class ResponseBuilder {
@@ -27,15 +25,6 @@ public class ResponseBuilder {
         map.put("message", message);
         map.put("data", data);
         ResponseEntity<Object> responseEntity = new ResponseEntity<>(map, status);
-
-        // loggin
-        try {
-            logger.info((new ObjectMapper())
-                    .writerWithDefaultPrettyPrinter().writeValueAsString(responseEntity));
-
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
 
         return responseEntity;
     }
